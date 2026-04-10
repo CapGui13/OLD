@@ -2643,7 +2643,7 @@
             align-items: center;
             gap: 1rem;
         }
-        body.animate.logo-go .logo-right-inner {
+        body.animate.logo-go .logo-right-inner.anim-pending {
             animation: slideUpFade 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
         }
 
@@ -2655,7 +2655,7 @@
             opacity: 0;
         }
 
-        body.animate.logo-go .nav-facebook-wrap > .facebook-icon {
+        body.animate.logo-go .nav-facebook-wrap > .facebook-icon.anim-pending {
             animation: slideUpFade 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
         }
 
@@ -3099,7 +3099,7 @@
                 </div>
             </div>
             <div class="logo-right header-bottom-row">
-                <div class="logo-right-inner">
+                <div class="logo-right-inner anim-pending">
                     <a href="https://www.facebook.com/profile.php?id=100008045747478" target="_blank" rel="noopener noreferrer" class="facebook-icon facebook-header" aria-label="Suivez-nous sur Facebook">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><use href="#icon-facebook"/></svg>
                     </a>
@@ -3111,7 +3111,7 @@
         </div>
     <nav class="nav-card-container" role="navigation" aria-label="Navigation principale">
         <div class="nav-facebook-wrap">
-            <a href="https://www.facebook.com/profile.php?id=100008045747478" target="_blank" rel="noopener noreferrer" class="facebook-icon facebook-nav" aria-label="Suivez-nous sur Facebook">
+            <a href="https://www.facebook.com/profile.php?id=100008045747478" target="_blank" rel="noopener noreferrer" class="facebook-icon facebook-nav anim-pending" aria-label="Suivez-nous sur Facebook">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><use href="#icon-facebook"/></svg>
             </a>
         </div>
@@ -4161,7 +4161,7 @@
                 const el = document.querySelector(sel);
                 if (!el) return;
                 el.addEventListener('animationend', () => {
-                    el.style.animation = 'none';
+                    el.classList.remove('anim-pending');
                     el.style.opacity = '1';
                     el.style.transform = finalTransform;
                     el.style.transition = restoreTransition;
