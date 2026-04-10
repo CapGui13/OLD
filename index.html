@@ -2769,8 +2769,25 @@
         </symbol>
     </svg>
     <noscript><style>#site-cover{display:none}</style></noscript>
+    <script>
+        (function() {
+            function fixBgHeight() {
+                var bg = document.getElementById('bg-fixed');
+                if (bg) bg.style.height = window.innerHeight + 'px';
+            }
+            fixBgHeight();
+            // Recalcul uniquement sur resize réel (pas sur scroll iOS)
+            var lastW = window.innerWidth;
+            window.addEventListener('resize', function() {
+                if (window.innerWidth !== lastW) {
+                    lastW = window.innerWidth;
+                    fixBgHeight();
+                }
+            }, { passive: true });
+        })();
+    </script>
     <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;background:url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;"></div>
-    <div id="bg-fixed" style="position:fixed;inset:0;z-index:-1;background:url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;pointer-events:none;"></div>
+    <div id="bg-fixed" style="position:fixed;top:0;left:0;width:100%;z-index:-1;background:url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;pointer-events:none;"></div>
     <script>
         (function() {
             var img = new Image();
