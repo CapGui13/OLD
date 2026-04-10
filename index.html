@@ -35,8 +35,6 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/46NwTY8.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/46NwTY8.png">
     <link rel="preload" as="image" href="https://i.imgur.com/9QqR6I9.jpeg">
-    <link rel="preload" as="image" href="https://i.imgur.com/MxM3Se0.jpeg" media="(max-width: 1050px)">
-    <link rel="preload" as="image" href="https://i.imgur.com/SF7rXmN.jpeg" media="(min-width: 1051px)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
@@ -2506,23 +2504,17 @@
             content: '';
             position: fixed;
             inset: 0;
-            background:
-                url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;
+            background: url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;
             z-index: -1;
             pointer-events: none;
             opacity: 1;
-            /* Promotion GPU : évite le repaint à chaque frame de scroll sur mobile */
             will-change: transform;
             transform: translateZ(0);
         }
 
+        /* Fond mobile — div dédié, pas de media query sur body::after */
         @media (max-width: 1050px) {
-            body::after {
-                background-image: url('https://i.imgur.com/MxM3Se0.jpeg');
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-position: top center;
-            }
+            body::after { display: none; }
         }
 
         @keyframes dropBounce {
@@ -2796,12 +2788,45 @@
         </symbol>
     </svg>
     <noscript><style>#site-cover{display:none}</style></noscript>
+    <!-- Fond mobile dédié : image inline, aucun JS, aucune media query à appliquer -->
     <style>
-        @media (min-width: 1051px) {
-            #site-cover { background: url('https://i.imgur.com/SF7rXmN.jpeg') center top / cover !important; }
+        #bg-mobile { display: none; }
+        @media (max-width: 1050px) {
+            #bg-mobile { display: block; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+                background: url('https://i.imgur.com/MxM3Se0.jpeg') top center / 100% auto repeat-y; }
+            #site-cover { background-image: url('https://i.imgur.com/MxM3Se0.jpeg') !important;
+                background-size: 100% auto !important; background-repeat: repeat-y !important;
+                background-position: top center !important; }
         }
     </style>
-    <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;background-image:url('https://i.imgur.com/MxM3Se0.jpeg');background-size:100% auto;background-repeat:repeat-y;background-position:top center;"></div>
+    <div id="bg-mobile"></div>
+    <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;background:url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;"></div>
+    <script>
+        (function() {
+            var cover = document.getElementById('site-cover');
+            if (!cover) return;
+            var isMobile = window.innerWidth <= 1050;
+            var imgSrc = isMobile
+                ? 'https://i.imgur.com/MxM3Se0.jpeg'
+                : 'https://i.imgur.com/SF7rXmN.jpeg';
+
+            // Précharger dynamiquement la bonne image
+            var preload = document.createElement('link');
+            preload.rel = 'preload';
+            preload.as = 'image';
+            preload.href = imgSrc;
+            document.head.appendChild(preload);
+
+            if (isMobile) {
+                cover.style.backgroundImage = "url('" + imgSrc + "')";
+                cover.style.backgroundSize = '100% auto';
+                cover.style.backgroundRepeat = 'repeat-y';
+                cover.style.backgroundPosition = 'top center';
+            } else {
+                cover.style.background = "url('" + imgSrc + "') center top/cover";
+            }
+        })();
+    </script>
     <script>
         (function() {
             var img = new Image();
@@ -2835,9 +2860,7 @@
             }
             img.onload = img.onerror = revealSite;
             setTimeout(revealSite, 2000);
-            img.src = window.innerWidth <= 1050
-                ? 'https://i.imgur.com/MxM3Se0.jpeg'
-                : 'https://i.imgur.com/SF7rXmN.jpeg';
+            img.src = 'https://i.imgur.com/SF7rXmN.jpeg';
         })();
     </script>
     <!-- BOUTON RETOUR EN HAUT -->
