@@ -1317,6 +1317,7 @@
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
+            min-height: 300px;
         }
 
         .gallery-item {
@@ -2928,7 +2929,7 @@
                     <p class="address-line">Boulevard du Maréchal Juin</p>
                     <p class="address-line">13090 Aix-en-Provence</p>
                     <p><strong>Téléphone :</strong> 04 42 95 62 03</p>
-                    <p><strong>Email :</strong> <a href="/cdn-cgi/l/email-protection#3a485543485f545f5848535e5d5f7a5d575b535614595557"><span class="__cf_email__" data-cfemail="8efce1f7fcebe0ebecfce7eae9ebcee9e3efe7e2a0ede1e3">[email&#160;protected]</span></a></p>
+                    <p><strong>Email :</strong> <a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
                     <p style="font-style: italic; margin-top: 2.5rem; color: #666; line-height: 1.15;">
                         Créé en Octobre 1967, le Bridge Club du Roy René occupe maintenant le rez-de-chaussée de la Maison du Bridge à Aix-en-Provence.<br><br>
                         Le bâtiment est accessible aux handicapés et notre salle, climatisée et très lumineuse, peut accueillir jusqu'à 120 joueurs.
@@ -2951,11 +2952,11 @@
                 <p class="gallery-subtitle">Découvrez l'ambiance chaleureuse de notre club</p>
                 
                 <div class="gallery-filters">
-                    <button class="filter-btn active" onclick="filterGallery('all', this)">Toutes</button>
-                    <button class="filter-btn" onclick="filterGallery('salle', this)">La Salle</button>
-                    <button class="filter-btn" onclick="filterGallery('tournois', this)">Tournois</button>
-                    <button class="filter-btn" onclick="filterGallery('cours', this)">Cours</button>
-                    <button class="filter-btn" onclick="filterGallery('events', this)">Événements</button>
+                    <button class="filter-btn active" data-filter="all" onclick="filterGallery('all', this)">Toutes</button>
+                    <button class="filter-btn" data-filter="salle" onclick="filterGallery('salle', this)">La Salle</button>
+                    <button class="filter-btn" data-filter="tournois" onclick="filterGallery('tournois', this)">Tournois</button>
+                    <button class="filter-btn" data-filter="cours" onclick="filterGallery('cours', this)">Cours</button>
+                    <button class="filter-btn" data-filter="events" onclick="filterGallery('events', this)">Événements</button>
                     <button class="filter-btn admin-btn" onclick="openAdmin()" title="Administration">⚙️</button>
                 </div>
 
@@ -3046,7 +3047,7 @@
         </div>
         <div class="contact-info-item">
             <label>Email</label>
-            <p><a href="/cdn-cgi/l/email-protection#1c6e73656e7972797e6e75787b795c7b717d7570327f7371"><span class="__cf_email__" data-cfemail="88fae7f1faede6edeafae1ecefedc8efe5e9e1e4a6ebe7e5">[email&#160;protected]</span></a></p>
+            <p><a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
         </div>
     </div>
 
@@ -3071,7 +3072,7 @@
                 </div>
                 <div class="contact-info-item">
                     <label>Email</label>
-                    <p><a href="/cdn-cgi/l/email-protection#d3b1a1bab7b4b6b0bfa6b1a1bcaaa1b6bdb693b4beb2babffdb0bcbe"><span class="__cf_email__" data-cfemail="2a4858434e4d4f49465f48584553584f444f6a4d474b434604494547">[email&#160;protected]</span></a></p>
+                    <p><a href="mailto:bridgeclubroyrene@gmail.com">bridgeclubroyrene@gmail.com</a></p>
                 </div>
             </div>
         </div>
@@ -3185,14 +3186,14 @@
         <div class="footer-inner">
             <div class="footer-links">
                 <a href="tel:+33442956203"><span class="footer-tel-icon">📞</span> 04 42 95 62 03</a>
-                <a href="/cdn-cgi/l/email-protection#50223f2922353e3532223934373510373d31393c7e333f3d">✉ <span class="__cf_email__" data-cfemail="99ebf6e0ebfcf7fcfbebf0fdfefcd9fef4f8f0f5b7faf6f4">[email&#160;protected]</span></a>
+                <a href="mailto:royrenebridge@gmail.com">✉ royrenebridge@gmail.com</a>
             </div>
             <div class="footer-copy">
                 <span class="footer-copy-name">© <span id="currentYear"></span> Bridge Club Roy René</span><span class="footer-copy-sep"> — </span><span class="footer-copy-address">Boulevard du Maréchal Juin, 13090 Aix-en-Provence</span>
             </div>
         </div>
     </footer>
-    <script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
 
     <script>
         // ================================================================
@@ -3335,7 +3336,7 @@
         // === STORAGE KEY ===
         const STORAGE_KEY = 'bridge_gallery_photos';
         // Mot de passe hashé (SHA-256 de "bridge2025") — ne jamais stocker le mot de passe en clair
-        const ADMIN_PASSWORD_HASH = '7c8ef069e38d3e86e2f60ea4ba748c0fe0cef9b7f71b78b65d11c53bb72c77b3';
+        const ADMIN_PASSWORD_HASH = 'f30d93091a918963431bc68f7f350c191ac2efeb962aab6dfd9d3db28ffee597';
 
         // === GALLERY DATA ===
         let galleryImages = [];
@@ -3479,7 +3480,7 @@
 
                 showSuccessMessage('✓ Photo publiée avec succès !');
                 cancelUpload();
-                initGallery();
+                refreshGallery();
                 updateAdminPhotosList();
             };
 
@@ -3504,19 +3505,94 @@
                 return;
             }
 
-            galleryImages.forEach(photo => {
+            galleryImages.forEach((photo, index) => {
                 const card = document.createElement('div');
                 card.className = 'admin-photo-card';
-                card.innerHTML = `
-                    <img src="${photo.url}" alt="${escapeHtml(photo.title)}">
-                    <div class="admin-photo-info">
-                        <div class="admin-photo-title">${escapeHtml(photo.title)}</div>
-                        <div class="admin-photo-category">${escapeHtml(getCategoryName(photo.category))}</div>
-                        <button class="admin-photo-delete" onclick="deletePhoto(${photo.id})">🗑️ Supprimer</button>
-                    </div>
-                `;
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-id', photo.id);
+                card.style.cursor = 'grab';
+
+                const catOptions = ['salle','tournois','cours','events'].map(c => {
+                    const labels = {salle:'La Salle', tournois:'Tournois', cours:'Cours', events:'Événements'};
+                    return `<option value="${c}" ${photo.category===c?'selected':''}>${labels[c]}</option>`;
+                }).join('');
+
+                card.innerHTML =
+                    '<div style="text-align:center;font-size:20px;color:#aaa;padding:4px 0;cursor:grab;user-select:none;" title="Glisser pour réordonner">⠿</div>' +
+                    '<img src="' + photo.url + '" alt="' + escapeHtml(photo.title) + '">' +
+                    '<div class="admin-photo-info">' +
+                    '<input type="text" value="' + escapeHtml(photo.title) + '" data-id="' + photo.id + '" ' +
+                    'style="width:100%;padding:4px 6px;border:1px solid #555;border-radius:4px;background:#2a2a2a;color:#fff;font-size:13px;margin-bottom:4px;" ' +
+                    'title="Cliquer pour modifier le nom">' +
+                    '<select data-id="' + photo.id + '" ' +
+                    'style="width:100%;padding:4px 6px;border:1px solid #555;border-radius:4px;background:#2a2a2a;color:#fff;font-size:13px;margin-bottom:6px;">' +
+                    catOptions +
+                    '</select>' +
+                    '<button class="admin-photo-delete" data-id="' + photo.id + '">\uD83D\uDDD1\uFE0F Supprimer</button>' +
+                    '</div>';
+
+                // Rename on input blur
+                card.querySelector('input[type=text]').addEventListener('change', function() {
+                    renamePhoto(parseInt(this.dataset.id), this.value);
+                });
+                // Recategorize on select change
+                card.querySelector('select').addEventListener('change', function() {
+                    recategorizePhoto(parseInt(this.dataset.id), this.value);
+                });
+                // Delete
+                card.querySelector('.admin-photo-delete').addEventListener('click', function() {
+                    deletePhoto(parseInt(this.dataset.id));
+                });
+
+                // Drag & drop pour réordonner
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', String(photo.id));
+                    setTimeout(() => { card.style.opacity = '0.4'; }, 0);
+                });
+                card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    card.style.outline = '2px dashed #7c9e7c';
+                });
+                card.addEventListener('dragleave', () => { card.style.outline = ''; });
+                card.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    card.style.outline = '';
+                    const draggedId = parseInt(e.dataTransfer.getData('text/plain'));
+                    const targetId = photo.id;
+                    if (draggedId === targetId) return;
+                    const draggedIndex = galleryImages.findIndex(p => p.id === draggedId);
+                    const targetIndex = galleryImages.findIndex(p => p.id === targetId);
+                    const moved = galleryImages.splice(draggedIndex, 1)[0];
+                    galleryImages.splice(targetIndex, 0, moved);
+                    savePhotosToStorage();
+                    updateAdminPhotosList();
+                    refreshGallery();
+                    showSuccessMessage('\u2713 Ordre mis \u00e0 jour');
+                });
+
                 list.appendChild(card);
             });
+        }
+
+        function renamePhoto(id, newTitle) {
+            const photo = galleryImages.find(p => p.id === id);
+            if (photo) {
+                photo.title = newTitle;
+                savePhotosToStorage();
+                refreshGallery();
+                showSuccessMessage('\u2713 Nom mis \u00e0 jour');
+            }
+        }
+
+        function recategorizePhoto(id, newCategory) {
+            const photo = galleryImages.find(p => p.id === id);
+            if (photo) {
+                photo.category = newCategory;
+                savePhotosToStorage();
+                refreshGallery();
+                showSuccessMessage('\u2713 Cat\u00e9gorie mise \u00e0 jour');
+            }
         }
 
         function escapeHtml(str) {
@@ -3539,11 +3615,17 @@
             galleryImages = galleryImages.filter(photo => photo.id !== id);
             savePhotosToStorage();
             updateAdminPhotosList();
-            initGallery();
+            refreshGallery();
             showSuccessMessage('✓ Photo supprimée');
         }
 
         // === GALLERY INITIALIZATION ===
+        function refreshGallery() {
+            const activeBtn = document.querySelector('.filter-btn.active:not(.admin-btn)');
+            const category = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+            filterGallery(category, activeBtn);
+        }
+
         function initGallery() {
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = '';
@@ -3873,21 +3955,28 @@
             // Créer un FormData pour l'envoi
             const formData = new FormData(form);
             
-            // Envoyer via FormSubmit
+            // Envoyer via FormSubmit (FormData sans JSON header)
+            const jsonBody = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                message: formData.get('message'),
+                _subject: 'Nouveau message depuis le site du BCRR',
+                _captcha: 'false'
+            };
+
             fetch('https://formsubmit.co/ajax/royrenebridge@gmail.com', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    name: formData.get('name'),
-                    phone: formData.get('phone'),
-                    email: formData.get('email'),
-                    message: formData.get('message')
-                })
+                body: JSON.stringify(jsonBody)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
             .then(data => {
                 if (data.success === "true" || data.success === true) {
                     showSuccessMessage('✓ Message envoyé avec succès !');
@@ -3899,7 +3988,24 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                showSuccessMessage('❌ Erreur d\'envoi. Veuillez réessayer ou appeler le 04 42 95 62 03');
+                // Fallback : ouvrir le client mail avec les infos pré-remplies
+                const name = formData.get('name') || '';
+                const phone = formData.get('phone') || '';
+                const email = formData.get('email') || '';
+                const message = formData.get('message') || '';
+                const body = encodeURIComponent(
+                    'Nom : ' + name + '\n' +
+                    'Téléphone : ' + phone + '\n' +
+                    'Email : ' + email + '\n\n' +
+                    message
+                );
+                const mailto = 'mailto:royrenebridge@gmail.com?subject=' +
+                    encodeURIComponent('Message depuis le site BCRR') +
+                    '&body=' + body;
+                window.location.href = mailto;
+                showSuccessMessage('📧 Ouverture de votre messagerie...');
+                form.reset();
+                setTimeout(() => toggleContact(), 2000);
             })
             .finally(() => {
                 submitBtn.disabled = false;
@@ -4436,22 +4542,4 @@
             var THRESHOLD = 10;
             document.querySelectorAll('.nav-card button').forEach(function(btn) {
                 var sx = 0, sy = 0;
-                btn.addEventListener('touchstart', function(e) {
-                    var t = e.touches[0];
-                    sx = t.clientX; sy = t.clientY;
-                }, { passive: true });
-                btn.addEventListener('touchend', function(e) {
-                    var t = e.changedTouches[0];
-                    if (Math.abs(t.clientX - sx) > THRESHOLD || Math.abs(t.clientY - sy) > THRESHOLD) return;
-                    btn.classList.add('is-tapped');
-                    setTimeout(function() { btn.classList.remove('is-tapped'); }, 300);
-                }, { passive: true });
-            });
-        })();
-    </script>
-    <style>
-        body.no-transition * { transition: none !important; }
-    </style>
-
-</body>
-</html>
+                btn.addEventListener('touchstart', functio
