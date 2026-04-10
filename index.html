@@ -3885,7 +3885,9 @@
             // Calcule la largeur de la scrollbar pour éviter le saut de layout
             const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
             document.documentElement.style.paddingRight = scrollbarWidth + 'px';
+            // Appliquer top AVANT position:fixed — flush du layout pour éviter le saut sur mobile
             document.body.style.top = `-${_scrollY}px`;
+            document.body.offsetHeight; // force reflow : top est calculé avant que position:fixed soit activé
             document.body.classList.add('scroll-locked');
         }
 
