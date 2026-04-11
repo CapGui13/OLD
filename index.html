@@ -242,7 +242,7 @@
         }
 
         /* === MOBILE SCROLL FIX === */
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             html {
                 /* Momentum scroll natif iOS — glisse librement, ralentit en approchant des bords */
                 -webkit-overflow-scrolling: touch;
@@ -388,7 +388,7 @@
         }
 
         .logo-subtitle-city {
-            display: none; /* Caché sur desktop — affiché uniquement via @media (max-width: 600px) */
+            display: none; /* Caché sur desktop — affiché uniquement via @media (max-width: 700px) */
         }
 
         .logo-right img {
@@ -420,7 +420,7 @@
         }
 
         /* Quand la nav déborde (zoom élevé), elle se repositionne normalement */
-        @media (max-width: 1050px) and (min-width: 711px) {
+        @media (max-width: 1050px) and (min-width: 601px) {
             /* Annuler le débordement desktop du logo-right */
             .logo-right {
                 align-self: center;
@@ -485,7 +485,7 @@
             transition: opacity 1.5s ease 0.3s;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             body.animate .nav-card-container {
                 transition: opacity 2s ease 0.7s;
             }
@@ -621,7 +621,6 @@
             gap: 1rem;
         }
 
-        /* 3 colonnes uniquement sur desktop */
         @media (min-width: 1200px) {
             .main-container {
                 grid-template-columns: repeat(3, 1fr);
@@ -1828,90 +1827,15 @@
             }
         }
 
-        /* ============================================================
-           BREAKPOINTS RESPONSIVES
-           - Desktop  : ≥ 1200px  (3 colonnes, tailles pleine échelle)
-           - Tablette : 601px – 1199px  (1 colonne empilée, sans accordéon)
-           - Mobile   : ≤ 600px   (1 colonne, accordéon, tailles compactes)
-        ============================================================ */
-
-        /* === TABLETTE (601px – 1199px) : 1 colonne empilée, cartes toujours ouvertes === */
-        @media (min-width: 601px) and (max-width: 1199px) {
-
-            /* Header en colonne pour que la nav se place sous le logo */
-            .header-content {
-                flex-direction: column;
-                align-items: center;
-                gap: 0.8rem;
-            }
-
-            /* Nav sous le header, horizontale sur une ligne */
-            .nav-card-container {
-                position: static !important;
-                left: auto !important;
-                transform: none !important;
-                margin-top: 0.5rem !important;
-                margin-bottom: 0.5rem !important;
-                justify-content: center;
-                width: 100%;
-                padding: 0 1rem;
-                z-index: auto;
-                white-space: normal;
-            }
-
-            .nav-card {
-                flex-wrap: nowrap;
-                justify-content: center;
-                gap: 0.4rem;
-                padding: 0.6rem 0.8rem;
-                width: 100%;
-            }
-
-            .nav-card button {
-                padding: 0.55rem 0.85rem;
-                font-size: 0.82rem;
-                white-space: nowrap;
-            }
-
-            /* Grille 1 colonne */
-            .main-container {
-                grid-template-columns: 1fr;
-                gap: 1.2rem;
-                padding: 0 1.5rem;
-                margin-top: 1rem;
-            }
-
-            /* Cartes toujours visibles, pas d'accordéon */
-            .section-card {
-                padding: 1.5rem;
-            }
-
-            .section-card-toggle {
-                display: none !important;
-            }
-
-            .card-content {
-                max-height: none !important;
-                overflow: visible !important;
-                padding: 0 !important;
-                padding-top: 0 !important;
-            }
-
-            .section-title {
-                display: block !important;
-                font-size: 1.4rem;
-            }
-
-            .info-block h3 { font-size: 0.95rem; }
-            .info-block p { font-size: 0.85rem; }
-
-            /* Grilles internes des modales en 1 colonne */
+        /* === RESPONSIVE === */
+        @media (max-width: 1200px) {
+            .main-container,
             .location-content,
             .tarifs-grid,
             .equipe-grid {
                 grid-template-columns: 1fr;
             }
-
+            
             .tarifs-grid .tarif-card:first-child {
                 padding: 2rem;
             }
@@ -1921,7 +1845,7 @@
             }
         }
 
-        /* === ACCORDÉON MOBILE : ≤ 600px === */
+        /* === ACCORDÉON : mobiles ≤ 600px === */
         @media (max-width: 600px) {
             .main-container {
                 grid-template-columns: 1fr;
@@ -2006,7 +1930,7 @@
         /* FB header visible sur tous les écrans */
         .facebook-header { display: none; }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .facebook-header { display: flex; }
             .facebook-nav { display: none; }
 
@@ -2630,7 +2554,7 @@
             transition: color 0.25s ease;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .footer-tel-icon {
                 display: inline-block;
                 filter: grayscale(1) sepia(1) saturate(10) hue-rotate(310deg);
@@ -2655,7 +2579,7 @@
         .footer-copy-sep {
             color: rgba(255,255,255,0.55);
         }
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .footer-copy-sep { display: none; }
             .footer-copy-address {
                 display: block;
@@ -2753,7 +2677,7 @@
             100% { transform: scaleY(0); }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             /* Sur mobile : les 3 sections forment un seul bloc qui glisse depuis le bas */
             .main-container {
                 transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2876,7 +2800,7 @@
             z-index: 997;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .back-to-top { display: flex; }
         }
 
@@ -4349,7 +4273,7 @@
             const navCard = document.querySelector('.nav-card-container');
 
             function updateParallax() {
-                const isMobile = window.innerWidth <= 600;
+                const isMobile = window.innerWidth <= 700;
                 if (isMobile) {
                     if (logoSection) {
                         logoSection.style.transform = '';
@@ -4443,7 +4367,7 @@
 
             // Lancer l'observer seulement quand le site est révélé
             window._startReveal = function() {
-                const isMobile = window.innerWidth <= 600;
+                const isMobile = window.innerWidth <= 700;
                 const triggerAll = () => {
                     if (isMobile) {
                         // Mobile : les sections apparaissent en un seul bloc depuis le bas, plus tard
