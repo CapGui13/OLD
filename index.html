@@ -1212,6 +1212,41 @@
         .submit-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Validation visuelle */
+        .field-wrap {
+            position: relative;
+            margin-bottom: 1.6rem;
+        }
+        .field-wrap input,
+        .field-wrap textarea {
+            margin-bottom: 0;
+            transition: border 0.25s ease, box-shadow 0.25s ease;
+        }
+        .field-wrap input.invalid,
+        .field-wrap textarea.invalid {
+            border: 1.5px solid #e05252 !important;
+            box-shadow: 0 0 0 3px rgba(224, 82, 82, 0.18);
+        }
+        .field-wrap input.valid,
+        .field-wrap textarea.valid {
+            border: 1.5px solid #4caf7d !important;
+        }
+        .field-error {
+            position: absolute;
+            left: 0.2rem;
+            top: calc(100% + 0.15rem);
+            color: #e05252;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         /* === CONTACT INFO PANEL === */
@@ -3164,13 +3199,29 @@
         <div class="contact-modal-content">
             <button class="close-btn" onclick="toggleContact()" aria-label="Fermer">✕</button>
             <h2>Contacter le club</h2>
-            <form id="contactForm" onsubmit="handleSubmit(event)">
+            <form id="contactForm" onsubmit="handleSubmit(event)" novalidate>
                 <div class="form-row">
-                    <input type="text" name="name" placeholder="Nom et prénom *" required aria-label="Nom et prénom">
-                    <input type="tel" name="phone" placeholder="Numéro de téléphone *" required aria-label="Téléphone">
+                    <div class="field-wrap">
+                        <input type="text" name="name" placeholder="Nom et prénom *" required aria-label="Nom et prénom" autocomplete="name">
+                        <span class="field-error" id="err-name"></span>
+                    </div>
+                    <div class="field-wrap">
+                        <input type="tel" name="phone" placeholder="Numéro de téléphone *" required aria-label="Téléphone" autocomplete="tel">
+                        <span class="field-error" id="err-phone"></span>
+                    </div>
                 </div>
-                <input type="email" name="email" placeholder="E-mail *" required aria-label="Email">
-                <textarea name="message" placeholder="Message" rows="6" aria-label="Message"></textarea>
+                <div class="field-wrap">
+                    <input type="email" name="email" placeholder="E-mail *" required aria-label="Email" autocomplete="email">
+                    <span class="field-error" id="err-email"></span>
+                </div>
+                <div class="field-wrap">
+                    <textarea name="message" placeholder="Message *" rows="6" aria-label="Message" required></textarea>
+                    <span class="field-error" id="err-message"></span>
+                </div>
+                <!-- Honeypot — invisible pour les humains, piège pour les bots -->
+                <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                    <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+                </div>
                 <button type="submit" class="submit-btn">Envoyer</button>
             </form>
             <div class="contact-modal-infos">
@@ -3443,7 +3494,6 @@
     <script>
         // === STORAGE KEY ===
         const STORAGE_KEY = 'bridge_gallery_photos';
-        // Mot de passe hashé (SHA-256 de "bridge2025") — ne jamais stocker le mot de passe en clair
         const ADMIN_PASSWORD_HASH = 'f30d93091a918963431bc68f7f350c191ac2efeb962aab6dfd9d3db28ffee597';
 
         // === GALLERY DATA ===
@@ -4058,20 +4108,75 @@
             e.preventDefault();
             const form = e.target;
             const submitBtn = form.querySelector('.submit-btn');
-            
-            // Désactiver le bouton pendant l'envoi
+
+            // === 1. HONEYPOT — si le champ caché est rempli, c'est un bot ===
+            if (form.elements['website'] && form.elements['website'].value !== '') {
+                // Silence total : on fait semblant que ça marche
+                showSuccessMessage('✓ Message envoyé avec succès !');
+                form.reset();
+                setTimeout(() => toggleContact(), 1500);
+                return;
+            }
+
+            // === 2. VALIDATION CÔTÉ CLIENT ===
+            const fields = [
+                {
+                    el: form.elements['name'],
+                    errId: 'err-name',
+                    test: v => v.trim().length >= 2,
+                    msg: 'Veuillez entrer votre nom et prénom.'
+                },
+                {
+                    el: form.elements['phone'],
+                    errId: 'err-phone',
+                    test: v => (v.replace(/\D/g, '').length >= 10),
+                    msg: 'Numéro invalide (min. 10 chiffres).'
+                },
+                {
+                    el: form.elements['email'],
+                    errId: 'err-email',
+                    test: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
+                    msg: 'Adresse e-mail invalide.'
+                },
+                {
+                    el: form.elements['message'],
+                    errId: 'err-message',
+                    test: v => v.trim().length >= 10,
+                    msg: 'Le message doit faire au moins 10 caractères.'
+                }
+            ];
+
+            let valid = true;
+            fields.forEach(({ el, errId, test, msg }) => {
+                const errEl = document.getElementById(errId);
+                if (!test(el.value)) {
+                    el.classList.add('invalid');
+                    el.classList.remove('valid');
+                    if (errEl) errEl.textContent = msg;
+                    valid = false;
+                } else {
+                    el.classList.remove('invalid');
+                    el.classList.add('valid');
+                    if (errEl) errEl.textContent = '';
+                }
+            });
+
+            if (!valid) return;
+
+            // Effacer les erreurs résiduelles et feedback valid
+            fields.forEach(({ el }) => el.classList.remove('valid'));
+
+            // === 3. ANTI-DOUBLE-ENVOI ===
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Envoi en cours...';
-            
-            // Créer un FormData pour l'envoi
+            submitBtn.textContent = 'Envoi en cours…';
+
+            // === 4. ENVOI ===
             const formData = new FormData(form);
-            
-            // Envoyer via FormSubmit (FormData sans JSON header)
             const jsonBody = {
-                name: formData.get('name'),
-                phone: formData.get('phone'),
-                email: formData.get('email'),
-                message: formData.get('message'),
+                name:     formData.get('name'),
+                phone:    formData.get('phone'),
+                email:    formData.get('email'),
+                message:  formData.get('message'),
                 _subject: 'Nouveau message depuis le site du BCRR',
                 _captcha: 'false'
             };
@@ -4092,6 +4197,7 @@
                 if (data.success === "true" || data.success === true) {
                     showSuccessMessage('✓ Message envoyé avec succès !');
                     form.reset();
+                    fields.forEach(({ el }) => el.classList.remove('invalid', 'valid'));
                     setTimeout(() => toggleContact(), 1500);
                 } else {
                     throw new Error('Erreur d\'envoi');
@@ -4099,10 +4205,10 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Fallback : ouvrir le client mail avec les infos pré-remplies
-                const name = formData.get('name') || '';
-                const phone = formData.get('phone') || '';
-                const email = formData.get('email') || '';
+                // Fallback : ouvrir le client mail
+                const name    = formData.get('name') || '';
+                const phone   = formData.get('phone') || '';
+                const email   = formData.get('email') || '';
                 const message = formData.get('message') || '';
                 const body = encodeURIComponent(
                     'Nom : ' + name + '\n' +
@@ -4114,7 +4220,7 @@
                     encodeURIComponent('Message depuis le site BCRR') +
                     '&body=' + body;
                 window.location.href = mailto;
-                showSuccessMessage('📧 Ouverture de votre messagerie...');
+                showSuccessMessage('📧 Ouverture de votre messagerie…');
                 form.reset();
                 setTimeout(() => toggleContact(), 2000);
             })
@@ -4123,6 +4229,36 @@
                 submitBtn.textContent = 'Envoyer';
             });
         }
+
+        // Validation en temps réel — feedback immédiat dès que l'utilisateur quitte un champ
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('contactForm');
+            if (!form) return;
+            const realTimeRules = [
+                { name: 'name',    errId: 'err-name',    test: v => v.trim().length >= 2,                             msg: 'Veuillez entrer votre nom et prénom.' },
+                { name: 'phone',   errId: 'err-phone',   test: v => (v.replace(/\D/g, '').length >= 10),             msg: 'Numéro invalide (min. 10 chiffres).' },
+                { name: 'email',   errId: 'err-email',   test: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),  msg: 'Adresse e-mail invalide.' },
+                { name: 'message', errId: 'err-message', test: v => v.trim().length >= 10,                            msg: 'Le message doit faire au moins 10 caractères.' }
+            ];
+            realTimeRules.forEach(({ name, errId, test, msg }) => {
+                const el = form.elements[name];
+                const errEl = document.getElementById(errId);
+                if (!el || !errEl) return;
+                el.addEventListener('blur', function() {
+                    if (el.value === '') { el.classList.remove('invalid', 'valid'); errEl.textContent = ''; return; }
+                    if (!test(el.value)) {
+                        el.classList.add('invalid'); el.classList.remove('valid'); errEl.textContent = msg;
+                    } else {
+                        el.classList.remove('invalid'); el.classList.add('valid'); errEl.textContent = '';
+                    }
+                });
+                el.addEventListener('input', function() {
+                    if (el.classList.contains('invalid') && test(el.value)) {
+                        el.classList.remove('invalid'); el.classList.add('valid'); errEl.textContent = '';
+                    }
+                });
+            });
+        });
         
         function showSuccessMessage(text = '✓ Message envoyé avec succès !') {
             const message = document.createElement('div');
