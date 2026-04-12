@@ -2874,7 +2874,7 @@
     <style>
         #bg-mobile { display: none; }
         @media (max-width: 1050px) {
-            #bg-mobile { display: block; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            #bg-mobile { display: block; position: absolute; top: 0; left: 0; right: 0; min-height: 100%; z-index: -1; pointer-events: none;
                 background: url('https://i.imgur.com/MxM3Se0.jpeg') top center / 100% auto repeat-y; }
             #site-cover { background-image: url('https://i.imgur.com/MxM3Se0.jpeg') !important;
                 background-size: 100% auto !important; background-repeat: repeat-y !important;
@@ -3191,11 +3191,88 @@
                 </div>
             </div>
         </div>
-    
+    <nav class="nav-card-container" role="navigation" aria-label="Navigation principale">
+        <div class="nav-facebook-wrap">
+            <a href="https://www.facebook.com/profile.php?id=100008045747478" target="_blank" rel="noopener noreferrer" class="facebook-icon facebook-nav anim-pending" aria-label="Suivez-nous sur Facebook">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><use href="#icon-facebook"/></svg>
+            </a>
+        </div>
+        <div class="nav-card">
+            <button onclick="toggleOverlay('locationDropdown')" data-overlay="locationDropdown" aria-label="Afficher les informations de localisation" aria-expanded="false" aria-controls="locationDropdown">Nous trouver</button>
+            <button onclick="toggleOverlay('tarifsDropdown')" data-overlay="tarifsDropdown" aria-label="Consulter les tarifs du club" aria-expanded="false" aria-controls="tarifsDropdown">Les tarifs</button>
+            <button onclick="toggleOverlay('equipeDropdown')" data-overlay="equipeDropdown" aria-label="Découvrir l'équipe dirigeante" aria-expanded="false" aria-controls="equipeDropdown">L'équipe</button>
+            <button onclick="toggleOverlay('galleryDropdown')" data-overlay="galleryDropdown" aria-label="Voir la galerie photos" aria-expanded="false" aria-controls="galleryDropdown">Les photos</button>
+            <button onclick="toggleContact()" data-overlay="contactModal" aria-label="Contacter le club" aria-expanded="false" aria-controls="contactModal">Contact</button>
+        </div>
+    </nav>
 </header>
 
 
-    
+    <main class="main-container">
+        <article class="section-card">
+            <button class="section-card-toggle" aria-expanded="false" aria-controls="card-content-cours" aria-label="Section Cours — afficher ou masquer">
+                <span class="section-card-toggle-title" aria-hidden="true">Cours</span>
+                <span class="section-card-toggle-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="card-content" id="card-content-cours">
+                <h2 class="section-title">Cours</h2>
+                
+                <div class="highlight">
+                    <p><strong>Reprise</strong></p>
+                    <p><strong id="cours-reprise"></strong></p>
+                </div>
+                <div id="cours-container"></div>
+            </div>
+        </article>
+
+        <article class="section-card">
+            <button class="section-card-toggle" aria-expanded="false" aria-controls="card-content-tournois" aria-label="Section Tournois — afficher ou masquer">
+                <span class="section-card-toggle-title" aria-hidden="true">Tournois</span>
+                <span class="section-card-toggle-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="card-content" id="card-content-tournois">
+                <h2 class="section-title">Tournois</h2>
+                
+                <div class="highlight">
+                    <p><strong>Rondes de France à <span id="rdf-heure"></span></strong></p>
+                    <p id="rdf-jours"></p>
+                    <p style="margin-top: 0.5rem;"><strong><a id="rdf-btn" href="#" target="_blank" rel="noopener noreferrer" class="ffb-btn">Inscriptions sur le site FFB</a></strong></p>
+                </div>
+
+                <div class="info-block">
+                    <h3>Le lundi 2 tournois séparés</h3>
+                    <p>- Un tournoi réservé aux 2<sup>e</sup> et 1<sup>re</sup> séries</p>
+                    <p>- Un tournoi réservé aux Non classés, 4<sup>e</sup> et 3<sup>e</sup> séries</p>
+                </div>
+
+                <div style="border-top: 2px solid #667eea; margin: 1rem 0; padding-top: 1rem;">
+                    <div class="coupes-grid">
+                        <div class="info-block">
+                            <h3>Coupe des Clubs</h3>
+                            <div id="coupe-clubs-dates"></div>
+                        </div>
+
+                        <div class="info-block">
+                            <h3>Coupe de Provence</h3>
+                            <div id="coupe-provence-dates"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="section-card">
+            <button class="section-card-toggle" aria-expanded="false" aria-controls="card-content-actu" aria-label="Section Actualités — afficher ou masquer">
+                <span class="section-card-toggle-title" aria-hidden="true">Actualités</span>
+                <span class="section-card-toggle-icon" aria-hidden="true">▼</span>
+            </button>
+            <div class="card-content" id="card-content-actu">
+                <h2 class="section-title">Actualités</h2>
+                
+                <div id="actualites-container"></div>
+            </div>
+        </article>
+    </main>
 
     <footer class="site-footer">
         <div class="footer-inner">
