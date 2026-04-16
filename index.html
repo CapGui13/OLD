@@ -580,6 +580,7 @@
             isolation: isolate;
             transform-origin: center center;
             will-change: transform;
+            user-select: none;
         }
 
         /* Shimmer sweep on hover */
@@ -888,6 +889,7 @@
             transition: opacity 0.35s ease, background 0.35s ease;
             z-index: 998;
             pointer-events: none;
+            user-select: none;
         }
 
         .dropdown-overlay.active {
@@ -902,6 +904,29 @@
             transition: opacity 0.3s ease, background 0.3s ease;
         }
 
+        /*
+         * === ANIMATION D'OUVERTURE DES MODALES ===
+         *
+         * Symptôme corrigé : au moment où la modale finissait de s'ouvrir, la photo
+         * du bâtiment (et la carte Google) subissaient une légère déformation visible
+         * — un "glitch" d'une fraction de seconde juste avant la fin de l'animation.
+         *
+         * Cause : l'animation utilisait scale(0.75 → 1). Quand on applique un scale()
+         * sur un conteneur qui a des enfants à dimensions fixes (height: 400px pour
+         * .dropdown-photo et .dropdown-map), le moteur de rendu compresse/étire leurs
+         * pixels pendant toute la durée de l'animation. L'atterrissage final à scale(1)
+         * provoque un micro-recalcul de rendu perceptible à l'œil.
+         *
+         * Solution : remplacer scale() par translateY + opacity uniquement.
+         * Ces deux propriétés sont gérées par le GPU en mode "compositing" — elles
+         * déplacent ou fondent le conteneur sans jamais altérer le rendu de ses enfants.
+         * Résultat : l'image et la carte restent nettes pendant toute l'animation.
+         *
+         * ⚠️ Ne pas réintroduire scale() sur .dropdown-modal (ni sur ses états .active
+         * ou .closing), sous peine de faire réapparaître le glitch.
+         * Cette règle s'applique aussi au breakpoint tablette ci-dessous (chercher
+         * "⚠️ Pas de scale()").
+         */
         .dropdown-modal {
             background: white;
             border-radius: 12px;
@@ -911,12 +936,6 @@
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             position: relative;
-            /*
-             * ⚠️ NE PAS utiliser scale() ici.
-             * scale() déforme les éléments à dimensions fixes (photo, carte) pendant
-             * l'animation → glitch visuel perceptible à l'atterrissage de la modale.
-             * On anime uniquement translateY + opacity, qui n'altèrent pas le rendu interne.
-             */
             transform: translateY(24px);
             opacity: 0;
             transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
@@ -932,6 +951,20 @@
             transform: translateY(12px);
             opacity: 0;
             transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        /* Ré-autorise la sélection de texte dans le contenu des modales */
+        .dropdown-modal {
+            user-select: text;
+        }
+
+        /* Titres des modales non sélectionnables (cibles du double-clic intempestif) */
+        .dropdown-modal h2,
+        .dropdown-modal h3,
+        .tarifs-title,
+        .equipe-title,
+        .contact-modal-content h2 {
+            user-select: none;
         }
 
         .close-btn {
@@ -1308,7 +1341,7 @@
             100% { transform: translateY(-50%); opacity: 1; }
         }
 
-        .contact-modal-infos { display: none; }
+        .contact-modal-infos { display: block; margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2); }
 
         .contact-info-panel h3 {
             color: white;
@@ -1610,13 +1643,34 @@
             margin: 0 auto;
         }
 
-        .admin-login-form input {
+        .admin-password-wrap {
             flex: 1;
-            padding: 0.8rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-login-form input {
+            width: 100%;
+            padding: 0.8rem 2.6rem 0.8rem 0.8rem;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
         }
+
+        .admin-eye-btn {
+            position: absolute;
+            right: 0.6rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #888;
+            padding: 0.2rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .admin-eye-btn:hover { color: #444; }
 
         .admin-btn-login {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -3108,7 +3162,7 @@
                     <p class="address-line">Boulevard du Maréchal Juin</p>
                     <p class="address-line">13090 Aix-en-Provence</p>
                     <p><strong>Téléphone :</strong> 04 42 95 62 03</p>
-                    <p><strong>Email :</strong> <a href="/cdn-cgi/l/email-protection#e89a87919a8d868d8a9a818c8f8da88f85898184c68b8785"><span class="__cf_email__" data-cfemail="05776a7c77606b6067776c616260456268646c692b666a68">[email&#160;protected]</span></a></p>
+                    <p><strong>Email :</strong> <a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
                     <p style="font-style: italic; margin-top: 2.5rem; color: #666; line-height: 1.15;">
                         Créé en Octobre 1967, le Bridge Club du Roy René occupe maintenant le rez-de-chaussée de la Maison du Bridge à Aix-en-Provence.<br><br>
                         Le bâtiment est accessible aux handicapés et notre salle, climatisée et très lumineuse, peut accueillir jusqu'à 120 joueurs.
@@ -3156,7 +3210,10 @@
                 <div id="adminLogin" class="admin-section">
                     <p class="admin-subtitle">Entrez le mot de passe pour gérer les photos</p>
                     <div class="admin-login-form">
-                        <input type="password" id="adminPassword" placeholder="Mot de passe" onkeypress="if(event.key==='Enter') loginAdmin()">
+                        <div class="admin-password-wrap">
+                            <input type="password" id="adminPassword" placeholder="Mot de passe" onkeypress="if(event.key==='Enter') loginAdmin()">
+                            <button type="button" class="admin-eye-btn" id="adminEyeBtn" onclick="toggleAdminPassword()" title="Afficher/masquer le mot de passe" aria-label="Afficher le mot de passe">👁</button>
+                        </div>
                         <button onclick="loginAdmin()" class="admin-btn-login">Se connecter</button>
                     </div>
                 </div>
@@ -3226,7 +3283,7 @@
         </div>
         <div class="contact-info-item">
             <label>Email</label>
-            <p><a href="/cdn-cgi/l/email-protection#1a687563687f747f7868737e7d7f5a7d777b737634797577"><span class="__cf_email__" data-cfemail="83f1ecfaf1e6ede6e1f1eae7e4e6c3e4eee2eaefade0ecee">[email&#160;protected]</span></a></p>
+            <p><a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
         </div>
     </div>
 
@@ -3267,7 +3324,7 @@
                 </div>
                 <div class="contact-info-item">
                     <label>Email</label>
-                    <p><a href="/cdn-cgi/l/email-protection#ec8e9e85888b898f80998e9e83959e898289ac8b818d8580c28f8381"><span class="__cf_email__" data-cfemail="5436263d30333137382136263b2d26313a31143339353d387a373b39">[email&#160;protected]</span></a></p>
+                    <p><a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
                 </div>
             </div>
         </div>
@@ -3381,7 +3438,7 @@
         <div class="footer-inner">
             <div class="footer-links">
                 <a href="tel:+33442956203"><span class="footer-tel-icon">📞</span> 04 42 95 62 03</a>
-                <a href="/cdn-cgi/l/email-protection#abd9c4d2d9cec5cec9d9c2cfccceebccc6cac2c785c8c4c6">✉ <span class="__cf_email__" data-cfemail="b9cbd6c0cbdcd7dcdbcbd0dddedcf9ded4d8d0d597dad6d4">[email&#160;protected]</span></a>
+                <a href="mailto:royrenebridge@gmail.com">✉ royrenebridge@gmail.com</a>
             </div>
             <div class="footer-copy">
                 <span class="footer-copy-name">© <span id="currentYear"></span> Bridge Club Roy René</span><span class="footer-copy-sep"> — </span><span class="footer-copy-address">Boulevard du Maréchal Juin, 13090 Aix-en-Provence</span>
@@ -3566,8 +3623,26 @@
         let isAdminLoggedIn = false;
 
         // === ADMIN FUNCTIONS ===
+        function toggleAdminPassword() {
+            var input = document.getElementById('adminPassword');
+            var btn = document.getElementById('adminEyeBtn');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+                btn.title = 'Masquer le mot de passe';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+                btn.title = 'Afficher le mot de passe';
+            }
+        }
+
         function openAdmin() {
             toggleOverlay('adminPanel');
+            setTimeout(function() {
+                var pwdInput = document.getElementById('adminPassword');
+                if (pwdInput) pwdInput.focus();
+            }, 150);
         }
 
         async function loginAdmin() {
@@ -3716,7 +3791,7 @@
                     '<img src="' + photo.url + '" alt="' + escapeHtml(photo.title) + '">' +
                     '<div class="admin-photo-info">' +
                     '<input type="text" value="' + escapeHtml(photo.title) + '" data-id="' + photo.id + '" ' +
-                    'style="width:100%;padding:4px 6px;border:1px solid #555;border-radius:4px;background:#2a2a2a;color:#fff;font-size:13px;margin-bottom:4px;" ' +
+                    'style="width:100%;padding:4px 6px;border:1px solid #555;border-radius:4px;background:#2a2a2a;color:#fff;font-size:13px;margin-bottom:4px;user-select:text;-webkit-user-select:text;" ' +
                     'title="Cliquer pour modifier le nom">' +
                     '<select data-id="' + photo.id + '" ' +
                     'style="width:100%;padding:4px 6px;border:1px solid #555;border-radius:4px;background:#2a2a2a;color:#fff;font-size:13px;margin-bottom:6px;">' +
@@ -3725,10 +3800,14 @@
                     '<button class="admin-photo-delete" data-id="' + photo.id + '">\u{1F5D1}\uFE0F Supprimer</button>' +
                     '</div>';
 
-                // Rename on input blur
-                card.querySelector('input[type=text]').addEventListener('change', function() {
+                // Rename on input blur + fix text selection (disable drag while editing)
+                const titleInput = card.querySelector('input[type=text]');
+                titleInput.addEventListener('change', function() {
                     renamePhoto(parseInt(this.dataset.id), this.value);
                 });
+                titleInput.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+                titleInput.addEventListener('focus', function() { card.setAttribute('draggable', 'false'); });
+                titleInput.addEventListener('blur', function() { card.setAttribute('draggable', 'true'); });
                 // Recategorize on select change
                 card.querySelector('select').addEventListener('change', function() {
                     recategorizePhoto(parseInt(this.dataset.id), this.value);
