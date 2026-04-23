@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="author" content="Bridge Club Roy René - Aix-en-Provence">
-    <meta name="theme-color" content="#0d1f10">
+    <meta name="format-detection" content="telephone=no, address=no, email=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bridge Club Roy René - Aix-en-Provence | Cours & Tournois FFB</title>
     <meta name="description" content="Bridge Club Roy René à Aix-en-Provence : cours tous niveaux (débutants, perfectionnement), tournois FFB réguliers (Rondes de France lun/mer/ven), Coupe des Clubs, Festival d'Aix. Salle climatisée, accessible PMR.">
@@ -34,14 +34,19 @@
     <link rel="canonical" href="https://bridgeclubroyrene.fr/">
     <link rel="icon" type="image/png" href="https://i.imgur.com/46NwTY8.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/46NwTY8.png">
-    <link rel="preload" as="image" href="https://i.imgur.com/9QqR6I9.jpeg">
+    <link rel="preload" as="image" href="https://i.imgur.com/9QqR6I9.jpeg" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
+    <!-- Chargement non-bloquant des polices + font-display:swap pour éviter FOIT -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Cormorant+Garamond:ital@1&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Cormorant+Garamond:ital@1&display=swap"></noscript>
     
     <!-- Optimisation performances -->
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://formsubmit.co">
+    <link rel="dns-prefetch" href="https://maps.googleapis.com">
+    <link rel="dns-prefetch" href="https://maps.gstatic.com">
+    <link rel="preconnect" href="https://maps.googleapis.com">
     
     <!-- JSON-LD Schema.org -->
     <script type="application/ld+json">
@@ -229,6 +234,7 @@
             color: #333;
             background: transparent;
             min-height: 100vh;
+            text-rendering: optimizeSpeed;
         }
 
         h1, h2, h3, h4, h5, h6 { font-weight: 700; }
@@ -575,7 +581,7 @@
 
         @media (max-width: 599px) {
             body.animate .nav-card-container {
-                transition: opacity 2s ease 0.5s;
+                transition: opacity 2s ease 0.2s;
             }
         }
         
@@ -671,11 +677,9 @@
                 background: linear-gradient(135deg, #3a6e4f 0%, #245c38 100%);
                 transform: scale(1.05);
                 box-shadow: 0 6px 20px rgba(26,77,46,0.45), 0 2px 6px rgba(0,0,0,0.2);
-                will-change: transform;
             }
 
             .nav-card button:not(:hover) {
-                will-change: auto;
             }
         }
 
@@ -737,6 +741,8 @@
             padding: 1.2rem;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             border-top: 2px solid transparent;
+            content-visibility: auto;
+            contain-intrinsic-size: 0 400px;
         }
 
         .section-card:nth-child(1) { border-top-color: #667eea; }
@@ -749,13 +755,11 @@
             transform: translateY(50px);
             transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
                         transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform, opacity;
         }
 
         .reveal.visible {
             opacity: 1;
             transform: translateY(0);
-            will-change: auto; /* libère le calque GPU une fois animé */
         }
 
         .reveal-down {
@@ -763,13 +767,11 @@
             transform: translateY(-20px);
             transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
                         transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform, opacity;
         }
 
         .reveal-down.visible {
             opacity: 1;
             transform: translateY(0);
-            will-change: auto;
         }
 
         .section-title {
@@ -1189,7 +1191,7 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr minmax(0, 380px);
             gap: 2rem;
             align-items: start;
         }
@@ -1222,6 +1224,8 @@
             transform: translateZ(0);
             will-change: transform;
         }
+
+
 
         .dropdown-photo img {
             width: 100%;
@@ -2041,6 +2045,34 @@
             }
         }
 
+        /* === TABLETTE : layout "Nous trouver" en 2 colonnes === */
+        @media (min-width: 600px) and (max-width: 1199px) {
+            .location-content {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 1.2rem;
+            }
+            /* Texte sur toute la hauteur à gauche */
+            .dropdown-info {
+                grid-row: 1 / 3;
+            }
+            /* Photo en haut à droite — décalée vers le bas pour s'aligner avec le texte */
+            .dropdown-photo {
+                height: 220px;
+                margin-top: 3rem;
+            }
+            /* Carte en bas à droite, limitée pour forcer le rendu compact */
+            .dropdown-map {
+                height: 220px;
+                max-width: 380px;
+                width: 100%;
+            }
+            /* Décalage du texte descriptif vers le bas (~2 lignes) */
+            .dropdown-info-desc {
+                margin-top: 4.15rem !important;
+            }
+        }
+
         /* === ACCORDÉON : mobile uniquement ≤ 599px === */
         @media (max-width: 599px) {
             .main-container {
@@ -2240,7 +2272,7 @@
                 font-family: 'Playfair Display', serif;
                 font-weight: 900;
                 letter-spacing: 0.15rem;
-                font-size: 3.8rem;
+                font-size: 3.3rem !important;
                 color: white;
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                 display: block;
@@ -2259,9 +2291,11 @@
                 margin-top: 0.6rem;
             }
             .logo-text p.logo-subtitle-city::before {
-                content: 'Bridge Club du Roy René';
+                content: 'Bridge Club\A du Roy René';
+                white-space: pre;
                 font-family: 'Great Vibes', cursive;
-                font-size: 1.3rem;
+                font-size: 1.7rem !important;
+                line-height: 1.4;
                 color: #f0c84a;
                 text-shadow: 0 1px 4px rgba(0,0,0,0.6), 0 0 14px rgba(212,175,55,0.4);
                 display: block;
@@ -2275,6 +2309,16 @@
                 opacity: 1;
                 transform: translateY(0);
                 transition-delay: 1s;
+            }
+            /* Sur mobile : "Bridge Club du Roy René" monte via animation (pas transition) */
+            @media (max-width: 599px) {
+                .logo-text p.logo-subtitle-city {
+                    transition: none;
+                }
+                body.animate.logo-go .logo-subtitle-city {
+                    animation: fadeSlideUp 0.8s ease 1.05s both;
+                    opacity: 0; /* maintenu invisible jusqu'au déclenchement */
+                }
             }
             .logo-right img { height: 48px; }
 
@@ -2409,8 +2453,9 @@
                 top: 0; left: 0; right: 0;
                 height: 100vh;
                 height: 100dvh;
-                align-items: center;
+                align-items: flex-start;
                 justify-content: center;
+                padding-top: 306px;
             }
 
             .dropdown-modal {
@@ -3010,13 +3055,14 @@
         /* Mobile (≤599px) : carte de plus haut, BCRR descend, subtitle monte, FB+Comité en derniers */
         @media (max-width: 599px) {
             body.animate.logo-go .logo-img img {
-                animation: dropBounceFar 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+                animation: dropBounceFar 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
             }
             body.animate.logo-go .logo-title {
-                animation: dropNoBounce 0.8s ease-out 0.5s both;
+                animation: dropNoBounce 0.9s ease-out 0.65s both;
             }
+            /* Sur mobile, BCRR = logo-subtitle-main::before → descend */
             body.animate.logo-go .logo-subtitle-main {
-                animation: fadeSlideUp 0.7s ease 0.75s both;
+                animation: dropNoBounce 0.9s ease-out 0.65s both;
             }
         }
 
@@ -3039,7 +3085,7 @@
         /* Mobile : FB + Comité descendent depuis au-dessus, en derniers (après BCRR et subtitle) */
         @media (max-width: 599px) {
             body.animate.logo-go .logo-right-inner.anim-pending {
-                animation: slideDownFade 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1s both;
+                animation: slideDownFade 1.1s cubic-bezier(0.22, 1, 0.36, 1) 1.45s both;
             }
         }
 
@@ -3200,10 +3246,27 @@
             #mobile-bg {
                 display: block;
                 position: fixed;
-                inset: 0;
+                top: 0;
+                left: 0;
+                width: 100%;
+                /*
+                 * ⚠️ NE PAS utiliser height:100vh ici.
+                 *
+                 * Sur iOS Safari, la barre d'adresse se rétracte au scroll, ce qui
+                 * modifie la hauteur de la viewport. Avec height:100vh ou inset:0,
+                 * la div se redimensionne à chaque frame → l'image "zoome" visiblement.
+                 *
+                 * Solution : la hauteur est verrouillée en pixels au chargement via JS
+                 * (voir script ci-dessous). On met 100vh ici uniquement comme valeur
+                 * initiale de rendu avant que le JS ait tourné.
+                 */
+                height: 100vh;
                 z-index: -1;
                 background: url('https://i.imgur.com/PcEwjZX.jpeg') top center / cover no-repeat;
                 pointer-events: none;
+                /* Empêche tout recalcul de layout sur cet élément */
+                will-change: transform;
+                transform: translateZ(0);
             }
             #site-cover { background-image: url('https://i.imgur.com/PcEwjZX.jpeg') !important;
                 background-size: cover !important; background-repeat: no-repeat !important;
@@ -3214,11 +3277,56 @@
         }
     </style>
     <div id="mobile-bg"></div>
-    <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;background:url('https://i.imgur.com/SF7rXmN.jpeg') center top/cover;"></div>
+    <script>
+        /*
+         * === VERROUILLAGE HAUTEUR FOND MOBILE ===
+         *
+         * Problème : sur iOS Safari, la barre d'adresse disparaît au scroll,
+         * modifiant la hauteur de la viewport. Une div `position:fixed` avec
+         * `height:100vh` ou `inset:0` se redimensionne à chaque changement de
+         * viewport → l'image de fond semble "zoomer" ou glisser pendant le scroll.
+         *
+         * Solution : mesurer la hauteur réelle de la fenêtre au chargement
+         * (quand la barre d'adresse est visible = hauteur maximale) et la
+         * verrouiller en pixels. La div ne bougera plus jamais, quelle que soit
+         * l'état de la barre d'adresse.
+         *
+         * On écoute aussi `orientationchange` pour recalculer après rotation.
+         * On n'écoute PAS `resize` ordinaire car c'est précisément ce qu'on veut éviter.
+         */
+        (function() {
+            if (window.innerWidth > 1024) return;
+            var bg = document.getElementById('mobile-bg');
+            if (!bg) return;
+
+            function lockHeight() {
+                // window.screen.height = hauteur physique de l'écran, non affectée
+                // par la barre d'adresse. Plus fiable que window.innerHeight sur iOS.
+                var h = window.screen.height;
+                bg.style.height = h + 'px';
+            }
+
+            lockHeight();
+
+            // Recalcul uniquement après rotation (portrait ↔ paysage)
+            window.addEventListener('orientationchange', function() {
+                // Délai nécessaire : la rotation n'est pas encore terminée au moment
+                // où l'événement se déclenche. 300ms est suffisant sur tous les appareils.
+                setTimeout(lockHeight, 300);
+            }, { passive: true });
+        })();
+    </script>
+    <div id="site-cover" style="position:fixed;inset:0;z-index:9998;transition:opacity 0.4s ease;background:#1a2e1a;"></div>
     <script>
         (function() {
             var cover = document.getElementById('site-cover');
             if (!cover) return;
+            // Sur tablette/mobile, verrouiller la hauteur identique à #mobile-bg
+            // pour éviter le flash de zoom au fondu (screen.height vs 100vh)
+            if (window.innerWidth <= 1024) {
+                cover.style.height = window.screen.height + 'px';
+                cover.style.bottom = 'auto';
+            }
             var isMobile = window.innerWidth <= 1024;
             var imgSrc = isMobile
                 ? 'https://i.imgur.com/PcEwjZX.jpeg'
@@ -3276,7 +3384,8 @@
                 ? 'https://i.imgur.com/PcEwjZX.jpeg'
                 : 'https://i.imgur.com/SF7rXmN.jpeg';
             img.onload = img.onerror = revealSite;
-            setTimeout(revealSite, 2000);
+            // Réduit de 2000ms à 1200ms : évite d'attendre trop longtemps si l'image est lente
+            setTimeout(revealSite, 1200);
             img.src = imgToLoad;
         })();
     </script>
@@ -3358,7 +3467,7 @@
                     <p><strong>Téléphone :</strong> 04 42 95 62 03</p>
                     <!-- EMAIL EN CLAIR — ne pas laisser Cloudflare obfusquer cette ligne -->
                     <p><strong>Email :</strong> <a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
-                    <p style="font-style: italic; margin-top: 2.5rem; color: #666; line-height: 1.15;">
+                    <p class="dropdown-info-desc" style="font-style: italic; margin-top: 2.5rem; color: #666; line-height: 1.15;">
                         Créé en Octobre 1967, le Bridge Club du Roy René occupe maintenant le rez-de-chaussée de la Maison du Bridge à Aix-en-Provence.<br><br>
                         Le bâtiment est accessible aux handicapés et notre salle, climatisée et très lumineuse, peut accueillir jusqu'à 120 joueurs.
                     </p>
@@ -3366,7 +3475,7 @@
                 <div class="dropdown-photo">
                     <img src="https://i.imgur.com/9QqR6I9.jpeg" alt="Façade de la Maison Provençale du Bridge - Bridge Club Roy René Aix-en-Provence" width="600" height="400" loading="lazy" decoding="async">
                 </div>
-                <iframe class="dropdown-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2872.5263892891726!2d5.4327295!3d43.521388!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c98d7624d282a7%3A0x2d24890b32d556a4!2sClub%20de%20Bridge%20Roy%20Ren%C3%A9!5e0!3m2!1sfr!2sfr!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Carte localisation Bridge Club Roy René"></iframe>
+                <iframe class="dropdown-map" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2872.5263892891726!2d5.4327295!3d43.521388!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c98d7624d282a7%3A0x2d24890b32d556a4!2sClub%20de%20Bridge%20Roy%20Ren%C3%A9!5e0!3m2!1sfr!2sfr!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Carte localisation Bridge Club Roy René"></iframe>
             </div>
         </div>
     </div>
@@ -3377,7 +3486,7 @@
             <button class="close-btn" onclick="toggleOverlay('galleryDropdown')" aria-label="Fermer">✕</button>
             <div class="gallery-content">
                 <h2 class="gallery-title" id="gallery-title">Galerie Photos</h2>
-                <p class="gallery-subtitle">Découvrez l'ambiance chaleureuse de notre club</p>
+
                 
                 <div class="gallery-filters">
                     <button class="filter-btn active" onclick="filterGallery('all', this)">Toutes</button>
@@ -3534,7 +3643,7 @@
                 <div class="logo-text">
                     <h1 class="logo-title">Bridge Club Roy René</h1>
                     <p class="logo-subtitle-main">Bridge Club<span class="subtitle-break"> du Roy René</span></p>
-                    <p class="logo-subtitle-city"><span class="city-initial">A</span>ix-en-Provence</p>
+                    <p class="logo-subtitle-city"><span class="city-initial">A</span><span translate="no">ix-en-Provence</span></p>
                 </div>
             </div>
             <div class="logo-right header-bottom-row">
@@ -4111,7 +4220,7 @@
                 item.onclick = () => openLightbox(index);
                 
                 item.innerHTML = `
-                    <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.title)}" loading="eager">
+                    <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.title)}" loading="lazy" decoding="async">
                     <div class="gallery-item-overlay">
                         <p class="gallery-item-title">${escapeHtml(img.title)}</p>
                     </div>
@@ -4277,19 +4386,17 @@
         function formatDate(dateStr) {
             const [day, month] = dateStr.split('/');
             const today = new Date();
+            const currentMonth = today.getMonth();
             const currentYear = today.getFullYear();
 
-            // On construit la date pour l'année courante et on choisit
-            // l'année la plus proche (passée ou future) selon le contexte.
-            const d = new Date(currentYear, month - 1, day);
-            // Si la date est déjà passée de plus de 6 mois, elle appartient
-            // à la prochaine édition (année suivante).
-            const diffMs = d - today;
-            if (diffMs < -180 * 24 * 3600 * 1000) d.setFullYear(currentYear + 1);
-            // Si la date est dans plus de 6 mois dans le futur, elle appartenait
-            // à l'édition précédente (année précédente).
-            if (diffMs > 180 * 24 * 3600 * 1000) d.setFullYear(currentYear - 1);
-            return d;
+            let dateYear = currentYear;
+            if (currentMonth >= 8) {
+                if (month - 1 < 8) dateYear = currentYear + 1;
+            } else {
+                if (month - 1 >= 8) dateYear = currentYear - 1;
+            }
+
+            return new Date(dateYear, month - 1, day);
         }
 
         function isDatePassed(dateStr) {
@@ -4335,10 +4442,7 @@
                 if (!block) return;
                 let found = false;
                 for (let p of block.querySelectorAll('[data-date]')) {
-                    // Utilise data-passed du CONFIG (géré manuellement) plutôt que
-                    // isDatePassed() qui se trompe sur les dates de début de saison (oct.)
-                    const passed = p.getAttribute('data-passed') === 'true';
-                    if (!found && !passed) {
+                    if (!found && !isDatePassed(p.getAttribute('data-date'))) {
                         p.classList.add('date-prochaine');
                         if (!p.querySelector('.badge-prochain')) {
                             const badge = document.createElement('span');
@@ -4391,9 +4495,9 @@
             window._scrollLocked = true;
             window.addEventListener('wheel', _preventScroll, { passive: false });
             window.addEventListener('touchmove', _preventScroll, { passive: false });
-            // Sur mobile : _preventScroll suffit, pas de modification DOM
+            // Sur mobile (≤480px) : _preventScroll suffit, pas de modification DOM
             // (position:fixed sur body et overflow:hidden sur html causent un zoom du fond)
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > 480) {
                 document.body.style.position = 'fixed';
                 document.body.style.top = `-${_scrollY}px`;
                 document.body.style.width = '100%';
@@ -4405,7 +4509,7 @@
             window._scrollLocked = false;
             window.removeEventListener('wheel', _preventScroll);
             window.removeEventListener('touchmove', _preventScroll);
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > 480) {
                 document.body.style.position = '';
                 document.body.style.top = '';
                 document.body.style.width = '';
@@ -4467,6 +4571,16 @@
                 if (id === 'galleryDropdown') {
                     filteredImages = [...galleryImages];
                     initGallery();
+                }
+
+                // Fallback Maps : si le préchargement post-reveal n'a pas encore eu le temps
+                // de s'exécuter (connexion très lente), on injecte le src à l'ouverture.
+                if (id === 'locationDropdown') {
+                    const mapIframe = overlay.querySelector('iframe[data-src]');
+                    if (mapIframe) {
+                        mapIframe.src = mapIframe.dataset.src;
+                        mapIframe.removeAttribute('data-src');
+                    }
                 }
 
                 // Activate focus trap after a short delay to let the modal render
@@ -4738,8 +4852,8 @@
                 const el = document.getElementById(containerId);
                 if (!el) return;
                 el.innerHTML = dates.map(d => {
-                    if (d.finale) return `<p data-date="${d.date}" data-passed="${d.passed ? 'true' : 'false'}"><strong>Finale : ${d.date}</strong></p>`;
-                    return `<p data-date="${d.date}" data-passed="${d.passed ? 'true' : 'false'}">- ${d.date}</p>`;
+                    if (d.finale) return `<p data-date="${d.date}"><strong>Finale : ${d.date}</strong></p>`;
+                    return `<p data-date="${d.date}">- ${d.date}</p>`;
                 }).join('');
             };
             renderCoupe(CONFIG.coupeDesClubs,   'coupe-clubs-dates');
@@ -4846,6 +4960,7 @@
             const logoSection = document.querySelector('.logo-section');
             const navCard = document.querySelector('.nav-card-container');
 
+            let _parallaxRAF = null;
             function updateParallax(forceScrollY) {
                 const isMobile = window.innerWidth <= 599;
                 const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024;
@@ -4860,16 +4975,16 @@
                 // Sans ce return, le logo saute vers le haut à chaque ouverture de modale.
                 if (_scrollLocked) return;
                 const scrollY = (typeof forceScrollY === 'number') ? forceScrollY : window.scrollY;
-                if (logoSection) {
-                    logoSection.style.transform = `translateY(${scrollY * 0.25}px)`;
-                    // Sur tablette : fade piloté par syncParallax (basé sur contact avec la nav)
-                    // Sur desktop : fade fixe à 220px
-                    if (window.innerWidth > 1024) {
-                        logoSection.style.opacity = Math.max(0, 1 - scrollY / 220);
+                if (_parallaxRAF) return; // déjà planifié ce cycle
+                _parallaxRAF = requestAnimationFrame(function() {
+                    _parallaxRAF = null;
+                    if (logoSection) {
+                        logoSection.style.transform = `translateY(${scrollY * 0.25}px)`;
+                        if (window.innerWidth > 1024) {
+                            logoSection.style.opacity = Math.max(0, 1 - scrollY / 220);
+                        }
                     }
-                    // Sur tablette, l'opacity de logo-section est gérée par syncParallax
-                }
-                // Nav reste fixe — pas de parallaxe
+                });
             }
 
             window.addEventListener('scroll', updateParallax, { passive: true });
@@ -4991,18 +5106,47 @@
                     revealEls.forEach(el => observer.observe(el));
                 };
                 setTimeout(triggerAll, 400);
+
+                /*
+                 * === PRÉCHARGEMENT GOOGLE MAPS APRÈS REVEAL ===
+                 *
+                 * On injecte le src de l'iframe Maps dès que les section-cards
+                 * ont commencé à apparaître — la carte sera prête quand l'utilisateur
+                 * cliquera sur "Nous trouver", sans aucun temps de chargement.
+                 *
+                 * Pourquoi ne pas charger au DOMContentLoaded ?
+                 *   Maps envoie plusieurs requêtes réseau lourdes (tuiles, JS SDK…).
+                 *   Les charger pendant le reveal de la page créerait une contention
+                 *   réseau avec les images et polices prioritaires.
+                 *
+                 * Délai de 1200ms :
+                 *   - Laisse le temps aux section-cards de finir leur animation (max ~800ms)
+                 *   - Évite de concurrencer le chargement du fond et des images hero
+                 *   - La carte est prête bien avant qu'un utilisateur ait le temps de cliquer
+                 */
+                setTimeout(function() {
+                    var mapIframe = document.querySelector('#locationDropdown iframe[data-src]');
+                    if (mapIframe) {
+                        mapIframe.src = mapIframe.dataset.src;
+                        mapIframe.removeAttribute('data-src');
+                    }
+                }, 1200);
             };
 
             // Si on redimensionne vers mobile après que le site soit déjà révélé en desktop,
             // s'assurer que .mobile-revealed est bien appliqué
+            let _revealResizeTimer = null;
             window.addEventListener('resize', function() {
-                if (window.innerWidth <= 1024) {
-                    const mainContainer = document.querySelector('.main-container');
-                    if (mainContainer && !mainContainer.classList.contains('mobile-revealed')) {
-                        mainContainer.classList.add('mobile-revealed');
+                clearTimeout(_revealResizeTimer);
+                _revealResizeTimer = setTimeout(function() {
+                    if (window.innerWidth <= 1024) {
+                        const mainContainer = document.querySelector('.main-container');
+                        if (mainContainer && !mainContainer.classList.contains('mobile-revealed')) {
+                            mainContainer.classList.add('mobile-revealed');
+                        }
                     }
-                }
-            });
+                }, 80);
+            }, { passive: true });
 
             // Signale que _startReveal est prêt (pour le cas où le cover se charge avant DOMContentLoaded)
             document.dispatchEvent(new Event('_startRevealReady'));
@@ -5217,7 +5361,7 @@
                 resizeTimer = setTimeout(function() {
                     document.body.classList.remove('no-transition');
                 }, 100);
-            });
+            }, { passive: true });
         })();
     </script>
     <script>
@@ -5341,7 +5485,7 @@
                 var roiRect = roi.getBoundingClientRect();
                 var fbRect = fb.getBoundingClientRect();
                 var sectionRect = logoSection.getBoundingClientRect();
-                var centerX = (roiRect.right + fbRect.left) / 2;
+                var centerX = (roiRect.right + (fbRect.left + fbRect.width / 2)) / 2;
                 var centerRelative = centerX - sectionRect.left;
                 logoText.style.position = 'absolute';
                 logoText.style.left = centerRelative + 'px';
@@ -5369,10 +5513,14 @@
                 if (isTablet()) centerLogoText();
                 else reset();
             });
+            var _centerResizeTimer = null;
             window.addEventListener('resize', function() {
-                if (isTablet()) centerLogoText();
-                else reset();
-            });
+                clearTimeout(_centerResizeTimer);
+                _centerResizeTimer = setTimeout(function() {
+                    if (isTablet()) centerLogoText();
+                    else reset();
+                }, 80);
+            }, { passive: true });
         })();
     </script>
 
