@@ -12,7 +12,7 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://bridgeclubroyrene.fr/">
+    <meta property="og:url" content="https://www.roy-rene-bridge.com/">
     <meta property="og:title" content="Bridge Club Roy René - Aix-en-Provence | Cours & Tournois">
     <meta property="og:description" content="Club de bridge convivial à Aix-en-Provence. Cours tous niveaux, tournois FFB, Rondes de France. Maison Provençale du Bridge.">
     <meta property="og:image" content="https://i.imgur.com/9QqR6I9.jpeg">
@@ -31,7 +31,7 @@
     <meta name="geo.position" content="43.521388;5.4327295">
     <meta name="ICBM" content="43.521388, 5.4327295">
     
-    <link rel="canonical" href="https://bridgeclubroyrene.fr/">
+    <link rel="canonical" href="https://www.roy-rene-bridge.com/">
     <link rel="icon" type="image/png" href="https://i.imgur.com/46NwTY8.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/46NwTY8.png">
     <link rel="preload" as="image" href="https://i.imgur.com/9QqR6I9.jpeg" fetchpriority="high">
@@ -56,7 +56,7 @@
       "name": "Bridge Club Roy René",
       "alternateName": "BCRR - Maison Provençale du Bridge",
       "description": "Club de bridge à Aix-en-Provence proposant des cours pour tous niveaux et des tournois FFB réguliers. Fondé en 1967.",
-      "url": "https://bridgeclubroyrene.fr",
+      "url": "https://www.roy-rene-bridge.com",
       "telephone": "+33442956203",
       "email": "royrenebridge@gmail.com",
       "foundingDate": "1967-10",
@@ -116,7 +116,7 @@
       "paymentAccepted": "Cash, Check",
       "hasMap": "https://www.google.com/maps?cid=3259890256938337956",
       "sameAs": [
-        "http://www.bridgecomitedeprovence.com/",
+        "https://www.bridgecomitedeprovence.com/",
         "https://www.facebook.com/profile.php?id=100008045747478"
       ]
     }
@@ -128,7 +128,7 @@
       "@type": "Organization",
       "name": "Bridge Club Roy René",
       "legalName": "Bridge Club du Roy René",
-      "url": "https://bridgeclubroyrene.fr",
+      "url": "https://www.roy-rene-bridge.com",
       "logo": "https://i.imgur.com/6aJikOc.png",
       "foundingDate": "1967",
       "address": {
@@ -572,6 +572,13 @@
             .logo-section {
                 position: relative;
                 z-index: 1;
+            }
+
+            /* Tablette : scroll fluide avec bounce simulé sur Android */
+            .dropdown-modal,
+            .contact-modal-content {
+                overscroll-behavior-x: none;
+                scroll-behavior: smooth;
             }
         }
         body.animate .nav-card-container {
@@ -1210,6 +1217,10 @@
         }
 
         .dropdown-info .address-line { padding-left: 1rem; }
+        /* Texte desc dupliqué pour tablette — caché par défaut */
+        .dropdown-info-desc-tablet { display: none; }
+        /* Titre dupliqué au-dessus grille tablette — caché par défaut */
+        .location-title-above { display: none; }
 
         .dropdown-map,
         .dropdown-photo {
@@ -2052,24 +2063,49 @@
                 grid-template-rows: auto auto;
                 gap: 1.2rem;
             }
-            /* Texte sur toute la hauteur à gauche */
-            .dropdown-info {
+            .location-content {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            /* Titre en ligne 1 pleine largeur */
+            .dropdown-info-coords h2 {
+                grid-column: 1 / 3;
+                grid-row: 1;
+                margin-bottom: 0.5rem;
+            }
+            /* Coords en ligne 2 col 1, centré avec la photo */
+            .dropdown-info-coords {
+                grid-column: 1;
                 grid-row: 1 / 3;
+                align-self: start;
             }
-            /* Photo en haut à droite — décalée vers le bas pour s'aligner avec le texte */
+            /* Photo en ligne 2 col 2, centrée avec coords */
             .dropdown-photo {
+                grid-column: 2;
+                grid-row: 2;
                 height: 220px;
-                margin-top: 3rem;
+                margin-top: 0;
+                align-self: center;
             }
-            /* Carte en bas à droite, limitée pour forcer le rendu compact */
+            /* Carte en ligne 3 col 2, centrée avec la desc */
             .dropdown-map {
+                grid-column: 2;
+                grid-row: 3;
                 height: 220px;
                 max-width: 380px;
                 width: 100%;
+                align-self: center;
             }
-            /* Décalage du texte descriptif vers le bas (~2 lignes) */
-            .dropdown-info-desc {
-                margin-top: 4.15rem !important;
+            /* Desc en ligne 3 col 1, centrée avec la carte */
+            .dropdown-info-desc-tablet {
+                display: block;
+                grid-column: 1;
+                grid-row: 3;
+                align-self: center;
+            }
+            /* Cacher la version inline sur tablette */
+            .dropdown-info-desc-inline {
+                display: none;
             }
         }
 
@@ -2453,9 +2489,8 @@
                 top: 0; left: 0; right: 0;
                 height: 100vh;
                 height: 100dvh;
-                align-items: flex-start;
+                align-items: center;
                 justify-content: center;
-                padding-top: 306px;
             }
 
             .dropdown-modal {
@@ -3222,9 +3257,14 @@
         if ('scrollRestoration' in history) {
             history.scrollRestoration = 'manual';
         }
-        // Force le retour en haut au chargement et au refresh
-        window.addEventListener('pageshow', function() {
-            window.scrollTo(0, 0);
+        // Force le retour en haut uniquement lors d'un retour arrière depuis le bfcache
+        // (Safari iOS/iPadOS restaure la position de scroll via bfcache — event.persisted = true)
+        // Sans le check persisted, scrollTo(0,0) se déclenchait à chaque chargement normal,
+        // ce qui faisait atterrir l'utilisateur sur la section "Cours" au lieu du haut de page.
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                window.scrollTo(0, 0);
+            }
         });
     </script>
 </head>
@@ -3300,8 +3340,6 @@
             if (!bg) return;
 
             function lockHeight() {
-                // window.screen.height = hauteur physique de l'écran, non affectée
-                // par la barre d'adresse. Plus fiable que window.innerHeight sur iOS.
                 var h = window.screen.height;
                 bg.style.height = h + 'px';
             }
@@ -3459,7 +3497,7 @@
         <div class="dropdown-modal">
             <button class="close-btn" onclick="toggleOverlay('locationDropdown')" aria-label="Fermer">✕</button>
             <div class="location-content">
-                <div class="dropdown-info">
+                <div class="dropdown-info dropdown-info-coords">
                     <h2 id="location-title">Nous trouver</h2>
                     <p><strong>Bridge Club Roy René - Maison Provençale du Bridge</strong></p>
                     <p class="address-line">Boulevard du Maréchal Juin</p>
@@ -3467,7 +3505,13 @@
                     <p><strong>Téléphone :</strong> 04 42 95 62 03</p>
                     <!-- EMAIL EN CLAIR — ne pas laisser Cloudflare obfusquer cette ligne -->
                     <p><strong>Email :</strong> <a href="mailto:royrenebridge@gmail.com">royrenebridge@gmail.com</a></p>
-                    <p class="dropdown-info-desc" style="font-style: italic; margin-top: 2.5rem; color: #666; line-height: 1.15;">
+                    <p class="dropdown-info-desc dropdown-info-desc-inline" style="font-style: italic; margin-top: 2.5rem; color: #666; line-height: 1.15;">
+                        Créé en Octobre 1967, le Bridge Club du Roy René occupe maintenant le rez-de-chaussée de la Maison du Bridge à Aix-en-Provence.<br><br>
+                        Le bâtiment est accessible aux handicapés et notre salle, climatisée et très lumineuse, peut accueillir jusqu'à 120 joueurs.
+                    </p>
+                </div>
+                <div class="dropdown-info-desc-tablet">
+                    <p style="font-style: italic; color: #666; line-height: 1.15;">
                         Créé en Octobre 1967, le Bridge Club du Roy René occupe maintenant le rez-de-chaussée de la Maison du Bridge à Aix-en-Provence.<br><br>
                         Le bâtiment est accessible aux handicapés et notre salle, climatisée et très lumineuse, peut accueillir jusqu'à 120 joueurs.
                     </p>
@@ -3475,7 +3519,7 @@
                 <div class="dropdown-photo">
                     <img src="https://i.imgur.com/9QqR6I9.jpeg" alt="Façade de la Maison Provençale du Bridge - Bridge Club Roy René Aix-en-Provence" width="600" height="400" loading="lazy" decoding="async">
                 </div>
-                <iframe class="dropdown-map" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2872.5263892891726!2d5.4327295!3d43.521388!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c98d7624d282a7%3A0x2d24890b32d556a4!2sClub%20de%20Bridge%20Roy%20Ren%C3%A9!5e0!3m2!1sfr!2sfr!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Carte localisation Bridge Club Roy René"></iframe>
+                <iframe class="dropdown-map" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2893.086544748783!2d5.43272947654945!3d43.521387960945674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c98d7624d282a7%3A0x2d24890b32d556a4!2sClub%20de%20Bridge%20Roy%20Ren%C3%A9!5e0!3m2!1sfr!2sfr!4v1777106004782!5m2!1sfr!2sfr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Carte localisation Bridge Club Roy René"></iframe>
             </div>
         </div>
     </div>
@@ -4501,6 +4545,8 @@
                 document.body.style.position = 'fixed';
                 document.body.style.top = `-${_scrollY}px`;
                 document.body.style.width = '100%';
+                // Tablette : bloquer le scroll latéral du body
+                document.body.style.overflowX = 'hidden';
             }
         }
 
@@ -4513,6 +4559,7 @@
                 document.body.style.position = '';
                 document.body.style.top = '';
                 document.body.style.width = '';
+                document.body.style.overflowX = '';
                 window.scrollTo(0, _scrollY);
             }
             if (window._syncParallaxResetFade) window._syncParallaxResetFade();
@@ -5541,18 +5588,5 @@
          * ⚠️ Ne pas étendre ce preventDefault() au haut de page (atTop && dy > 0) :
          *    cela casse le bounce natif iOS vers le haut et crée des glitches visuels.
          */
-        (function() {
-            if (window.innerWidth > 1024) return;
-            var startY = 0;
-            document.addEventListener('touchstart', function(e) {
-                startY = e.touches[0].clientY;
-            }, { passive: true });
-            document.addEventListener('touchmove', function(e) {
-                var dy = e.touches[0].clientY - startY;
-                var atBottom = (window.scrollY + window.innerHeight) >= document.body.scrollHeight - 2;
-                if (atBottom && dy < 0) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-        })();
+
     </script>
